@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+  <html>
+  <style>
+    table, th, td {
+      //width: 60%;
+      border: 1px solid black;
+      border-collapse: collapse;
+      text-align: center;
+      height: 40px;
+      vertical-align: middle;
+    }
+
+  </style>
+
+  <head>
+    <title> Pollutants Standards Index (PSI)</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="mystyle.css">
+  </head>
+
+  <body style="text-align:center;" id="body">
+    <h1 style="color:#111111;font-size:50px;"> PSI data from data.gov.sg </h1>
+    <h2 id="datetimetext" style='color:#888888; font-size:20px'>test</h2>
+    <div align="center" class="main" id="main"></div>
+  </body>
+
+<script>
+  //setting date and time/
+  //const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  var today = new Date();
+  //var date = today.getFullYear()+'/'+monthNames[(today.getMonth())]+'/'+today.getDate();
+  //var time = today.getHours()+':'+(today.getMinutes());
+  //var datetime = date+' @ '+time;
+  datetimetext.innerText = "Retrieval date: "+ today.toLocaleString();
+
+  //get data using api
+  var myData;
+  fetch('https://api.data.gov.sg/v1/environment/psi')
+    .then(response=>response.json())
+    .then(data=>myData=data)
+    .then(()=>this.myFunction(myData));
+
+  function myFunction(data) {
+
+    var readings=data.items[0].readings;
+    var keys=Object.keys(readings)
+
+    //console.log(readings);
+    //console.log(keys);
+
+    var table = document.createElement("table");
+    document.getElementById('main').appendChild(table)
+
+    const areas=['national','north','south','east','west','central']
+    rowhead=table.insertRow()
+    //table.appendChild(rowhead);
+    rowhead.insertCell().innerHTML=' '
+    for (let i=0; i<6; i++){
+      rowhead.insertCell().innerHTML='<b>'+areas[i]+'</b>';
+    }
+
+    for (let j=0; j<12; j++){
+      row=table.insertRow();
+      //table.appendChild(row);
+      row.insertCell().innerHTML=keys[j];
+      for (let i=0; i<6; i++){
+        value=readings[keys[j]][areas[i]]
+        row.insertCell().innerHTML='<i>'+value+'</i>';
+        //console.table(value)
+      }
+    }
+
+    console.log(table)
+  }
+
+</script>
+
+
+  </html>
